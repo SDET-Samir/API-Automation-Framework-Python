@@ -15,4 +15,11 @@ def test_student_lifecycle(base_url):
     data = response_get.json()
     assert data['student_details']['name'] == "Master Samir"
     assert data['student_details']['major'] == "Automation"
-    print("✅ Lifecycle test passed: Created and Verified!")
+    print("Lifecycle test passed: Created and Verified!")
+
+
+def test_create_student_invalid_name(base_url):
+    bad_payload = {"name": "A", "major": "Hacking"}
+    response = requests.post(base_url, json=bad_payload)
+    assert response.status_code == 400
+    assert "error" in response.json()
