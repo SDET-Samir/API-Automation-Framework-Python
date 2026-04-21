@@ -23,3 +23,12 @@ def test_create_student_invalid_name(base_url):
     response = requests.post(base_url, json=bad_payload)
     assert response.status_code == 400
     assert "error" in response.json()
+
+
+def test_full_employee_lifecycle(base_url):
+    new_emp = {"name": "Engineer Samir", "role": "QA Expert"}
+    requests.post(base_url, json=new_emp, timeout=5)
+    delete_url = f"{base_url}/Engineer Samir"
+    response = requests.delete(delete_url, timeout=5)
+    assert response.status_code == 200
+    assert response.json()['status'] == "success"
