@@ -1,10 +1,11 @@
 import pytest
 import requests
+from config import BASE_URL
 
 
 @pytest.fixture
 def base_url():
-    return "http://localhost:5000/api/students"
+    return BASE_URL
 
 
 def test_student_lifecycle(base_url):
