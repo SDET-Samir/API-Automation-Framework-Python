@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def test_Employee_lifecycle(base_url):
-    payload = {"name": "Master Samir", "major": "Automation"}
+    payload = {"name": "Master Samir", "Role": "Automation"}
     logger.info(f"Step 1: Creating employee with payload: {payload}")
     response_post = requests.post(base_url, json=payload, timeout=5)
     assert response_post.status_code == 201
@@ -27,14 +27,14 @@ def test_Employee_lifecycle(base_url):
         f"Step 3: Verifying data. Found name: {data['Employee_details']['name']}")
 
     assert data['Employee_details']['name'] == "Master Samir"
-    assert data['Employee_details']['major'] == "Automation"
+    assert data['Employee_details']['Role'] == "Automation"
 
     logger.info("Lifecycle test completed successfully!")
 
 
 @pytest.mark.parametrize("bad_name", ["A", "Ab", "", "  "])
 def test_create_employee_invalid_names(base_url, bad_name):
-    payload = {"name": bad_name, "role": "QA"}
+    payload = {"name": bad_name, "Role": "QA"}
     response = requests.post(base_url, json=payload)
     assert response.status_code == 400
     logger.info(f"Successfully rejected invalid name: {bad_name}")
