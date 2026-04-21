@@ -19,3 +19,13 @@ Run the following command:
 1. **Get
 2. **Post
 3. **Delete
+
+## Project Structure
+- `server.py`: The Mock Flask Server.
+- `tests/`: Contains automated test cases.
+- `config.py`: Configuration settings for different environments.
+- `requirements.txt`: Project dependencies.
+
+## Sample Report
+Once you run the tests, open `report.html` to see the visual execution results.
+
