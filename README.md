@@ -14,3 +14,8 @@ A professional automated testing suite for Student Management Systems.
 ## How to Generate Reports
 Run the following command:
 `pytest --html=report.html`
+
+## Test Coverage
+1. **Get
+2. **Post
+3. **Delete
