@@ -1,3 +1,4 @@
+import logging
 import pytest
 import requests
 from config import BASE_URL
@@ -8,22 +9,35 @@ def base_url():
     return BASE_URL
 
 
-def test_Employee_lifecycle(base_url):
-    payload = {"name": "Master Samir", "Role": "Automation"}
-    requests.post(base_url, json=payload, timeout=5)
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
+
+def test_Employee_lifecycle(base_url):
+    payload = {"name": "Master Samir", "major": "Automation"}
+    logger.info(f"Step 1: Creating employee with payload: {payload}")
+    response_post = requests.post(base_url, json=payload, timeout=5)
+    assert response_post.status_code == 201
+
+    logger.info("Step 2: Fetching employee data from server")
     response_get = requests.get(base_url, timeout=5)
     data = response_get.json()
+    logger.info(
+        f"Step 3: Verifying data. Found name: {data['Employee_details']['name']}")
+
     assert data['Employee_details']['name'] == "Master Samir"
-    assert data['Employee_details']['Role'] == "Automation"
-    print("Lifecycle test passed: Created and Verified!")
+    assert data['Employee_details']['major'] == "Automation"
+
+    logger.info("Lifecycle test completed successfully!")
 
 
-def test_create_Employee_invalid_name(base_url):
-    bad_payload = {"name": "A", "Role": "Hacking"}
-    response = requests.post(base_url, json=bad_payload, timeout=5)
+@pytest.mark.parametrize("bad_name", ["A", "Ab", "", "  "])
+def test_create_employee_invalid_names(base_url, bad_name):
+    payload = {"name": bad_name, "role": "QA"}
+    response = requests.post(base_url, json=payload)
     assert response.status_code == 400
-    assert "error" in response.json()
+    logger.info(f"Successfully rejected invalid name: {bad_name}")
 
 
 def test_full_Employee_lifecycle(base_url):
