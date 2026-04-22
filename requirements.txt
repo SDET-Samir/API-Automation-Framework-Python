@@ -1,4 +1,4 @@
-pytest
-requests
 flask
+requests
+pytest
 pytest-html
