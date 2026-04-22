@@ -1,5 +1,5 @@
 # API Automation Testing Framework
-A professional automated testing suite for Student Management Systems.
+A professional automated testing suite for Employee Management Systems.
 
 ## Tech Stack
 - **Language:** Python
@@ -16,9 +16,9 @@ Run the following command:
 `pytest --html=report.html`
 
 ## Test Coverage
-1. **Get
-2. **Post
-3. **Delete
+1. **Get**
+2. **Post**
+3. **Delete**
 
 ## Project Structure
 - `server.py`: The Mock Flask Server.
