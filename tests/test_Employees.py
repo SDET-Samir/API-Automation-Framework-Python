@@ -55,3 +55,11 @@ def test_create_employee_null_names(base_url, null_name):
     response = requests.post(base_url, json=payload, timeout=5)
     assert response.status_code == 400
     logger.info(f"Successfully rejected invalid name: {null_name}")
+
+
+def test_delete_non_exixtent_employee(base_url):
+    fake_name = "Ghost_User_99"
+    delete_url = f"{base_url}/{fake_name}"
+    response = requests.delete(delete_url, timeout=5)
+    assert response.status_code == 404
+    logger.info(f"correctly handled deletion of non-existent user:{fake_name}")
