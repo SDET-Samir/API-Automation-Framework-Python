@@ -6,20 +6,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4 # بروزرسانی به نسخه 4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5 # بروزرسانی به نسخه 5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Install dependencies
-        run: pip install flask requests pytest pytest-html
-
-
-      - name: Run Server and Tests
+      - name: Run Everything
         run: |
+          pip install flask requests pytest pytest-html
           python server.py &
-          sleep 10
+          sleep 5
           pytest
