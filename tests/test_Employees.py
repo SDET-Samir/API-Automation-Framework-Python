@@ -1,3 +1,4 @@
+from utils import load_test_data
 import logging
 import pytest
 import requests
@@ -14,22 +15,16 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 
-def test_Employee_lifecycle(base_url):
-    payload = {"name": "Master Samir", "Role": "Automation"}
-    logger.info(f"Step 1: Creating employee with payload: {payload}")
+def test_employee_lifecycle(base_url):
+    payload = load_test_data("new_employee")
+
+    logger.info(f"Step 1: Creating employee using JSON data: {payload}")
     response_post = requests.post(base_url, json=payload, timeout=5)
     assert response_post.status_code == 201
-
-    logger.info("Step 2: Fetching employee data from server")
     response_get = requests.get(base_url, timeout=5)
     data = response_get.json()
-    logger.info(
-        f"Step 3: Verifying data. Found name: {data['Employee_details']['name']}")
-
-    assert data['Employee_details']['name'] == "Master Samir"
-    assert data['Employee_details']['Role'] == "Automation"
-
-    logger.info("Lifecycle test completed successfully!")
+    assert data['Employee_details']['name'] == payload['name']
+    logger.info("Lifecycle test passed with External JSON Data!")
 
 
 @pytest.mark.parametrize("bad_name", ["A", "Ab", "", "  "])

@@ -1,0 +1,10 @@
+{
+  "new_employee": {
+    "name": "Master Samir",
+    "major": "Automation Expert"
+  },
+  "invalid_employee": {
+    "name": "Ab",
+    "major": "Junior"
+  }
+}
