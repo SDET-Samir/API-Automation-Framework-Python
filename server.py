@@ -16,8 +16,8 @@ def handle_Employee():
         received_data = request.get_json()
         name = received_data.get("name", "")
         Role = received_data.get("Role", "General")
-        if len(name) < 3:
-            return jsonify({"error": "Invalid name. Must be at least 3 chars."}), 400
+        if len(name) < 3 or not name.strip(" . "):
+            return jsonify({"error": "Invalid name"}), 400
 
         db["Employee"] = {"name": name, "Role": Role}
 

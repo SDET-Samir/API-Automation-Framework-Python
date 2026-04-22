@@ -35,7 +35,7 @@ def test_Employee_lifecycle(base_url):
 @pytest.mark.parametrize("bad_name", ["A", "Ab", "", "  "])
 def test_create_employee_invalid_names(base_url, bad_name):
     payload = {"name": bad_name, "Role": "QA"}
-    response = requests.post(base_url, json=payload)
+    response = requests.post(base_url, json=payload, timeout=5)
     assert response.status_code == 400
     logger.info(f"Successfully rejected invalid name: {bad_name}")
 
@@ -47,3 +47,11 @@ def test_full_Employee_lifecycle(base_url):
     response = requests.delete(delete_url, timeout=5)
     assert response.status_code == 200
     assert response.json()['status'] == "success"
+
+
+@pytest.mark.parametrize("null_name", ["", "...", "  "])
+def test_create_employee_null_names(base_url, null_name):
+    payload = {"name": null_name, "Role": "QA"}
+    response = requests.post(base_url, json=payload, timeout=5)
+    assert response.status_code == 400
+    logger.info(f"Successfully rejected invalid name: {null_name}")
