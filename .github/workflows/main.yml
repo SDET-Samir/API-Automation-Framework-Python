@@ -1,22 +1,16 @@
-name: API Automation CI
-
+name: Professional API CI
 on: [push]
-
 jobs:
-  test:
+  automation_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          
-      - name: Install Dependencies
+      - name: Setup and Run
         run: |
           pip install flask requests pytest pytest-html
-        
-      - name: Run Server and Tests
-        run: |
-          python server.py & 
+          python server.py &
           sleep 10
           pytest
