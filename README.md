@@ -1,3 +1,5 @@
+![CI Status](https://github.com)
+
 # API Automation Testing Framework
 A professional automated testing suite for Employee Management Systems.
 
