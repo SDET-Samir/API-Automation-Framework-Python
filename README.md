@@ -27,5 +27,5 @@ Run the following command:
 - `requirements.txt`: Project dependencies.
 
 ## Sample Report
-Once you run the tests, open `report.html` to see the visual execution results.
+Once you run the tests, open `report.html` to see the visual execution results..
 
