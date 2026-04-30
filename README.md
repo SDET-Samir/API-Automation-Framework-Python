@@ -1,7 +1,7 @@
 ![CI Status](https://github.com)
 
 # API Automation Testing Framework
-A professional automated testing suite for Employee Management Systems.
+A robust, scalable automation suite designed to ensure the reliability of Employee Management APIs. This framework follows the **Data-Driven Testing** pattern and is fully integrated with **CI/CD pipelines**.
 
 ## Tech Stack
 - **Language:** Python
@@ -17,10 +17,13 @@ A professional automated testing suite for Employee Management Systems.
 Run the following command:
 `pytest --html=report.html`
 
-## Test Coverage
-1. **Get**
-2. **Post**
-3. **Delete**
+## Business Value & Test Coverage
+This framework ensures the stability of the Employee Management System by covering critical business flows:
+
+- **Data Integrity Validation (GET/POST):** Ensures that every employee record created is stored accurately without data corruption.
+- **Security & Input Validation:** Protects the database by rejecting malformed requests (e.g., empty names or invalid roles), preventing system crashes.
+- **Regression Assurance (DELETE):** Guarantees that the removal of records is permanent and doesn't leave "ghost data" in the system, maintaining database hygiene.
+- **Error Resilience:** Validates that the API correctly handles non-existent resources (404) and server-side issues (500), ensuring a smooth user experience.
 
 ## Project Structure
 - `server.py`: The Mock Flask Server.

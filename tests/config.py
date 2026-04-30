@@ -1,1 +1,1 @@
-BASE_URL = "http://localhost:5000/api/v1/Employee"
+APP_URL = "http://localhost:5000/api/v1/Employee"
