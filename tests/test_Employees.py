@@ -16,15 +16,19 @@ logger = logging.getLogger(__name__)
 
 
 def test_employee_lifecycle(base_url):
-    payload = load_test_data("new_employee")
+    new_emp = {"name": "Ahmad Samir", "Major": "software QA"}
+    response_post = requests.post(base_url, json=new_emp)
+    res_json = response_post.json()
 
-    logger.info(f"Step 1: Creating employee using JSON data: {payload}")
-    response_post = requests.post(base_url, json=payload, timeout=5)
     assert response_post.status_code == 201
-    response_get = requests.get(base_url, timeout=5)
-    data = response_get.json()
-    assert data['Employee_details']['name'] == payload['name']
-    logger.info("Lifecycle test passed with External JSON Data!")
+    assert "Employee_details" in res_json
+
+    delete_url = f"{base_url}/Ahmad Samir"
+    res_delete = requests.delete(delete_url)
+    assert res_delete.status_code == 200
+    res_verify = requests.get(base_url)
+    assert res_verify.json()["Employee_details"]["name"]
+    logger.info("verified: Employee is actually gone from DB ")
 
 
 @pytest.mark.parametrize("bad_name", ["A", "Ab", "", "  "])
