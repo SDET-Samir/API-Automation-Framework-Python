@@ -1,16 +1,31 @@
-name: Professional API CI
+name: Employee API Multi-Container CI/CD Core Pipeline
+
 on: [push]
+
 jobs:
-  automation_test:
+  run_employee_tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout Code Repository Source
+        uses: actions/checkout@v4
+      
+      - name: Configure Core Python Environment Runtime
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Setup and Run
+          
+      - name: Build and Package Employee Application Service Snapshot Image
         run: |
-          pip install flask requests pytest pytest-html
-          python server.py &
-          sleep 10
-          pytest
+          docker build -f Dockerfile.app -t employee-core-app .
+
+      - name: Start Live Containerized App Server on Port 5001
+        run: |
+          # Map cloud network port 5001 to keep tests aligned perfectly
+          docker run -d -p 5001:5000 --name employee-service-engine employee-core-app
+          sleep 5
+
+      - name: Execute Automated Regression Test Suites against Sandbox Container
+        run: |
+          pip install requests pytest pytest-html
+          # Execute your test runner script
+          python -m pytest tests/Test_Employees.py -v --html=report.html --self-contained-html
