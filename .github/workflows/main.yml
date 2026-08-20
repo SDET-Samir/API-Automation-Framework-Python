@@ -26,6 +26,6 @@ jobs:
 
       - name: Execute Automated Regression Test Suites against Sandbox Container
         run: |
-          pip install requests pytest pytest-html
-          # Execute your test runner script
-          python -m pytest tests/Test_Employees.py -v --html=report.html --self-contained-html
+            pip install requests pytest pytest-html
+            python -m pytest **/[tT]est_*.py -v --html=report.html --self-contained-html
+
