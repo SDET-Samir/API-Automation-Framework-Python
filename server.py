@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
@@ -9,6 +10,12 @@ db = {
 
 @app.route('/')
 def UI_Dashboard():
+    # Case-insensitive robust template finder loop
+    template_dir = os.path.join(app.root_path, 'templates')
+    if os.path.exists(template_dir):
+        for file_name in os.listdir(template_dir):
+            if file_name.lower() == 'index.html':
+                return render_template(file_name)
     return render_template('index.html')
 
 
