@@ -1,4 +1,4 @@
-name: Employee API Multi-Container CI/CD Core Pipeline
+name: Employee API & UI Multi-Container CI/CD Core Pipeline
 
 on: [push]
 
@@ -20,12 +20,15 @@ jobs:
 
       - name: Start Live Containerized App Server on Port 5001
         run: |
-          # Map cloud network port 5001 to keep tests aligned perfectly
           docker run -d -p 5001:5000 --name employee-service-engine employee-core-app
           sleep 5
 
-      - name: Execute Automated Regression Test Suites against Sandbox Container
+      - name: Install Testing Dependencies & Playwright Binaries
         run: |
-            pip install requests pytest pytest-html
-            python -m pytest **/[tT]est_*.py -v --html=report.html --self-contained-html
+          pip install requests pytest pytest-html playwright pytest-playwright
+          # Let the high-speed cloud server download the headless browser binaries instantly
+          playwright install chromium
 
+      - name: Execute Automated Full-Stack Regression Test Suites
+        run: |
+          python -m pytest **/[tT]est_*.py -v --html=report.html --self-contained-html

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>👥 Employee Management Portal</h1>
+
+        <!-- Input Form Section -->
+        <div class="form-card">
+            <h2>Add New Employee</h2>
+            <div class="form-group">
+                <input type="text" id="empName" placeholder="Enter Full Name (Min 3 chars)">
+                <input type="text" id="empRole" placeholder="Enter Professional Role">
+                <button id="submitBtn" onclick="addEmployee()">Register Employee</button>
+            </div>
+            <p id="msg" class="message"></p>
+        </div>
+
+        <!-- Live Database Monitoring Grid -->
+        <div class="display-card">
+            <h2>Active Registry Snapshot</h2>
+            <div id="employeeRegistry">
+                <p>Loading live tracking data...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "/api/v1/Employee";
+
+        // Fetch and render the live employee database state
+        async function fetchRegistry() {
+            const res = await fetch(API_BASE);
+            const data = await res.json();
+            const container = document.getElementById("employeeRegistry");
+
+            if (data.Employee_details && data.Employee_details.name !== "None") {
+                container.innerHTML = `
+                    <div class="emp-row">
+                        <div>
+                            <strong>Name:</strong> <span id="viewName">${data.Employee_details.name}</span> <br>
+                            <strong>Role:</strong> <span id="viewRole">${data.Employee_details.Role}</span>
+                        </div>
+                        <button class="delete-btn" onclick="deleteEmployee('${data.Employee_details.name}')">Delete</button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `<p class="empty-state">No active employees found in the database.</p>`;
+            }
+        }
+
+        // Send a POST request to add a new employee
+        async function addEmployee() {
+            const name = document.getElementById("empName").value;
+            const Role = document.getElementById("empRole").value;
+            const msgEl = document.getElementById("msg");
+
+            const response = await fetch(API_BASE, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, Role })
+            });
+
+            const data = await response.json();
+            if (response.status === 201) {
+                msgEl.className = "message success";
+                msgEl.innerText = data.message;
+                fetchRegistry();
+            } else {
+                msgEl.className = "message error";
+                msgEl.innerText = data.error || "Failed to add employee";
+            }
+        }
+        async function deleteEmployee(name) {
+            await fetch(`${API_BASE}/${name}`, { method: "DELETE" });
+            fetchRegistry();
+        }
+
+        // Initialize display on load
+        fetchRegistry();
+    </script>
+</body>
+
+</html>

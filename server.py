@@ -1,10 +1,15 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
 db = {
     "Employee": {"name": "samir jan", "Role": "qa"}
 }
+
+
+@app.route('/')
+def UI_Dashboard():
+    return render_template('index.html')
 
 
 @app.route('/api/v1/Employee', methods=['GET', 'POST'])
