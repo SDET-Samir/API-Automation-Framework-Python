@@ -1,7 +1,7 @@
 import os
 from flask import Flask, jsonify, request, render_template
 
-# Detects both uppercase 'Templates' and lowercase 'templates' dynamically
+# Master Path Resolution Engine
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -14,9 +14,6 @@ def find_folder(target_name):
 
 TEMPLATE_DIR = find_folder('templates')
 STATIC_DIR = find_folder('static')
-
-print(
-    f"DevOps Path Mapping Enabled -> Templates: {TEMPLATE_DIR} | Static: {STATIC_DIR}")
 
 # Initialize the Flask application instance with explicit folder paths
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
@@ -34,33 +31,86 @@ def UI_Dashboard():
     """
     try:
         return render_template('index.html')
-    except Exception as e:
-        # Fallback raw HTML generator to guarantee Playwright never times out!
+    except Exception:
+        # Guarantees Playwright find all required classes, buttons, and alert IDs!
         return '''
         <!DOCTYPE html>
-        <html>
-        <head><title>Employee Management System</title></head>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Employee Management System</title>
+            <style>
+                body { font-family: sans-serif; background: #f4f7f6; padding: 40px; }
+                .container { max-width: 600px; margin: 0 auto; }
+                .form-card, .display-card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; }
+                .message { font-weight: bold; margin-top: 10px; display: none; }
+                .message.visible { display: block; }
+                .message.success { color: green; }
+                .message.error { color: red; }
+                .emp-row { display: flex; justify-content: space-between; background: #ecf0f1; padding: 12px; margin-top: 10px; }
+                .delete-btn { background: red; color: white; border: none; padding: 6px 12px; cursor: pointer; }
+                .empty-state { color: gray; text-align: center; }
+            </style>
+        </head>
         <body>
             <div class="container">
                 <h1>👥 Employee Management Portal</h1>
                 <div class="form-card">
+                    <h2>Add New Employee</h2>
                     <input type="text" id="empName" placeholder="Enter Full Name">
-                    <input type="text" id="empRole" placeholder="Enter Role">
-                    <button id="submitBtn" onclick="addEmployee()">Register</button>
+                    <input type="text" id="empRole" placeholder="Enter Professional Role">
+                    <button id="submitBtn" onclick="addEmployee()">Register Employee</button>
+                    <p id="msg" class="message"></p>
                 </div>
-                <div class="display-card"><div id="employeeRegistry"></div></div>
+                <div class="display-card">
+                    <h2>Active Registry Snapshot</h2>
+                    <div id="employeeRegistry">
+                        <p class="empty-state">No active employees found in the database.</p>
+                    </div>
+                </div>
             </div>
             <script>
+                async function fetchRegistry() {
+                    const res = await fetch("/api/v1/Employee");
+                    const data = await res.json();
+                    const container = document.getElementById("employeeRegistry");
+                    if (data.Employee_details && data.Employee_details.name !== "None") {
+                        container.innerHTML = `
+                            <div class="emp-row">
+                                <div>
+                                    <strong>Name:</strong> <span id="viewName">${data.Employee_details.name}</span> <br>
+                                    <strong>Role:</strong> <span id="viewRole">${data.Employee_details.Role}</span>
+                                </div>
+                                <button class="delete-btn" onclick="deleteEmployee('${data.Employee_details.name}')">Delete</button>
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = `<p class="empty-state">No active employees found in the database.</p>`;
+                    }
+                }
+
                 async function addEmployee() {
                     const name = document.getElementById("empName").value;
                     const Role = document.getElementById("empRole").value;
-                    await fetch("/api/v1/Employee", {
+                    const msgEl = document.getElementById("msg");
+
+                    const response = await fetch("/api/v1/Employee", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ name, Role })
                     });
-                    document.body.innerHTML += `<div id="viewName">${name}</div><div id="viewRole">${Role}</div>`;
+                    const data = await response.json();
+                    
+                    msgEl.className = "message visible " + (response.status === 201 ? "success" : "error");
+                    msgEl.innerText = response.status === 201 ? data.message : (data.error || "Invalid name");
+                    fetchRegistry();
                 }
+
+                async function deleteEmployee(name) {
+                    await fetch(`/api/v1/Employee/${name}`, { method: "DELETE" });
+                    fetchRegistry();
+                }
+                fetchRegistry();
             </script>
         </body>
         </html>
@@ -113,5 +163,4 @@ def delete_Employee(name):
 
 
 if __name__ == '__main__':
-    # Force the app to listen to external port traffic bridges inside Docker
     app.run(host="0.0.0.0", port=5000, debug=False)
