@@ -1,8 +1,15 @@
 import os
 from flask import Flask, jsonify, request, render_template
 
-app = Flask(__name__)
+# Calculate absolute directory paths to guarantee template delivery inside Linux containers
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
+# Initialize the Flask application instance with explicit folder paths
+app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
+
+# Simulated in-memory database storage system
 db = {
     "Employee": {"name": "samir jan", "Role": "qa"}
 }
@@ -10,10 +17,12 @@ db = {
 
 @app.route('/')
 def UI_Dashboard():
-    # Case-insensitive robust template finder loop
-    template_dir = os.path.join(app.root_path, 'templates')
-    if os.path.exists(template_dir):
-        for file_name in os.listdir(template_dir):
+    """
+    Serve the frontend web application dashboard portal.
+    Implements a case-insensitive template look-up to prevent container path locks.
+    """
+    if os.path.exists(TEMPLATE_DIR):
+        for file_name in os.listdir(TEMPLATE_DIR):
             if file_name.lower() == 'index.html':
                 return render_template(file_name)
     return render_template('index.html')
@@ -21,17 +30,26 @@ def UI_Dashboard():
 
 @app.route('/api/v1/Employee', methods=['GET', 'POST'])
 def handle_Employee():
+    """
+    Handle data collection operations for the Employee record registry.
+    """
     if request.method == 'GET':
         return jsonify({"Employee_details": db["Employee"]}), 200
 
     if request.method == 'POST':
-        received_data = request.get_json()
+        received_data = request.get_json() or {}
         name = received_data.get("name", "")
-        Role = received_data.get("Role", "General")
-        if len(name) < 3 or not name.strip(" . "):
+        role = received_data.get("Role", "General")
+
+        # Clean the input name string by stripping outer whitespace and dots
+        clean_name = str(name).strip(" .")
+
+        # Enforce strict character minimum constraints
+        if len(clean_name) < 3:
             return jsonify({"error": "Invalid name"}), 400
 
-        db["Employee"] = {"name": name, "Role": Role}
+        # Save the verified clean name and role into the mock data layer
+        db["Employee"] = {"name": clean_name, "Role": role}
 
         return jsonify({
             "message": "Employee added successfully",
@@ -41,6 +59,9 @@ def handle_Employee():
 
 @app.route('/api/v1/Employee/<string:name>', methods=['DELETE'])
 def delete_Employee(name):
+    """
+    Handle deletion operations for individual employee name entries.
+    """
     if db["Employee"]["name"] == name:
         db["Employee"] = {"name": "None", "Role": "None"}
         return jsonify({
@@ -53,4 +74,5 @@ def delete_Employee(name):
 
 
 if __name__ == '__main__':
+    # Force the app to listen to external port traffic bridges inside Docker
     app.run(host="0.0.0.0", port=5000, debug=False)
