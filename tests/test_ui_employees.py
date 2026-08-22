@@ -67,5 +67,5 @@ def test_ui_validation_error_handling(page: Page, invalid_name):
     # Verify that the browser displays the red error alert block message panel
     error_msg = page.locator("#msg")
     expect(error_msg).to_be_visible()
-    expect(error_msg).to_have_class("message error")
+    expect(error_msg).to_have_class("message visible error")
     expect(error_msg).to_have_text("Invalid name")
